@@ -1,3 +1,4 @@
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -7,260 +8,200 @@ import java.text.DateFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Scanner;
 
-import com.mysql.cj.conf.HostInfo;
+import com.mysql.cj.xdevapi.Statement;
 
-public class Venda{
+
+public class Venda {
+    String nomeProduto;
+
+    int totalVendas;
+    String data;
+    double valor;
     Connection connection;
+    int qtd_produto;
 
-    public Venda() throws SQLException{
+    public Venda() throws SQLException {
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mercado", "root", "");
     }
-    public void adicionarVenda(){
+
+    public void adicionarVenda() {
         Scanner scanner = new Scanner(System.in);
-       
-        
-        int totalVendas;
-        String data;
-        double valor;
-       
 
+        List<ProdutoVenda> produtosVendas = new ArrayList<ProdutoVenda>();
 
-    /*   System.out.println("Informe o horário (00/00/0000-hh:mm):");
-        data = scanner.next();
-        System.out.println("Informe a matrícula:");
-        matricula = scanner.nextInt();
-        System.out.println("Informe o valor da consulta:");
-        valor = Double.parseDouble(scanner.next());
-       */
-
-
-        try{
-
-            System.out.println(horario);
-            horario = horario.replace("-"," ");
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            System.out.println(format.parse(horario));
-            Date date = format.parse(horario);
-
-
-
-
-            PreparedStatement buscarMedico = connection.prepareStatement("SELECT * FROM medico where matricula = ?");
-
-            buscarMedico.setInt(1, matricula);
-            ResultSet resultMedico = buscarMedico.executeQuery();
-
-            PreparedStatement buscarPaciente = connection.prepareStatement("SELECT * FROM paciente where cpf = ?");
-            buscarPaciente.setString(1, cpf);
-            ResultSet resultPaciente = buscarPaciente.executeQuery();
-
-            if(resultMedico.next() == false){
-                System.out.println("Médico não encontrado");
-            }else
-            if(resultPaciente.next() == false){
-                System.out.println("Paciente não encontrado");
-            }else{
-
-                String idPaciente = resultPaciente.getString("id");
-                String idMedico = resultMedico.getString("id");
-
-                PreparedStatement cadastroConsulta = connection.prepareStatement("INSERT INTO consulta(id_medico, id_paciente, horario, valor) VALUES (?,?,?,?)");
-
-                cadastroConsulta.setInt(1, Integer.parseInt(idMedico));
-                cadastroConsulta.setInt(2, Integer.parseInt(idPaciente));
-                cadastroConsulta.setDate(3, new java.sql.Date(date.getTime()));
-                cadastroConsulta.setDouble(4, valor);
-            cadastroConsulta.execute();
-            System.out.println("Consulta cadastrada");
-            }
-        }catch(Exception e){
-            System.out.println(e);
-            System.out.println("Consulta não cadastrada");
-        }
-
-
-    }
-
-    public void buscarVenda(){
-        Scanner scanner = new Scanner(System.in);
-       
-
-        String cpf;
-        int matricula;
-        String horario;
-        String novoHorario;
-        double valor;
-       
-
-        System.out.println("Informe o CPF:");
-        cpf = scanner.next();
-       
-        System.out.println("Informe a matrícula:");
-        matricula = scanner.nextInt();
-        System.out.println("Informe o horário atual da consulta (00/00/0000-hh:mm):");
-        horario = scanner.next();
-        System.out.println("Informe o novo horário da consulta (00/00/0000-hh:mm):");
-        novoHorario = scanner.next();
-
-
-        try{
-
-            System.out.println(horario);
-            horario = horario.replace("-"," ");
-            novoHorario = novoHorario.replace("-"," ");
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            SimpleDateFormat formatBD = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        String pagamento = "";
+        boolean adicionandoProduto = true;
+        while (adicionandoProduto) {
            
+            System.out.println("Informe o codigo do produto:");
+            int codigo = scanner.nextInt();
+            System.out.println("Informe a quantidade do produto:");
+            int qtd = scanner.nextInt();
 
+            produtosVendas.add(new ProdutoVenda(codigo, qtd));
 
-            PreparedStatement buscarMedico = connection.prepareStatement("SELECT * FROM medico where matricula = ?");
-            buscarMedico.setInt(1, matricula);
-
-            ResultSet resultMedico = buscarMedico.executeQuery();
-
-            PreparedStatement buscarPaciente = connection.prepareStatement("SELECT * FROM paciente where cpf = ?");
-            buscarPaciente.setString(2, cpf);
-
-            ResultSet resultPaciente = buscarPaciente.executeQuery();
-
-            if(resultMedico.next() == false){
-                System.out.println("Médico não encontrado");
-            }else
-            if(resultPaciente.next() == false){
-                System.out.println("Paciente não encontrado");
-            }else{
-
-                String idPaciente = resultPaciente.getString("id");
-                String idMedico = resultMedico.getString("id");
-
-                PreparedStatement cadastroConsulta = connection.prepareStatement("UPDATE consulta SET horario = ? WHERE id_paciente = ? AND id_medico = ? AND horario = ?");
-                cadastroConsulta.setDate(1, new java.sql.Date(format.parse(horario).getTime()));
-                cadastroConsulta.setInt(2, Integer.parseInt(idPaciente));
-                cadastroConsulta.setInt(3, Integer.parseInt(idMedico));
-                cadastroConsulta.setDate(4, new java.sql.Date(formatBD.parse(novoHorario).getTime()));
-            cadastroConsulta.execute();
-            System.out.println("Consulta Atualizada\n\n");
+            System.out.println("Deseja adicionar main um produto? (s/n)");
+            String resposta = scanner.next();
+            if (resposta.equalsIgnoreCase("n")) {
+                adicionandoProduto = false;
+                break;
             }
-        }catch(Exception e){
-            System.out.println(e);
-            System.out.println("Consulta não Atualizada\n\n");
         }
 
+        System.out.println("Qual a forma de pagamento(1 - Dinheiro / 2 - Cartão):");
+        int resposta = scanner.nextInt();
+        if (resposta == 1) {
+            pagamento = "Dinheiro";
+        } else {
+            pagamento = "Cartão";
+        }
 
-    }
-
-    public void removerVenda(){
-        Scanner scanner = new Scanner(System.in);
-       
-
-        String cpf;
-        int matricula;
-        String horarioVenda;
-    
-       
-
-        System.out.println("Informe o CPF:");
-        cpf = scanner.next();
-       
-        System.out.println("Informe a matrícula do médico:");
-        matricula = scanner.nextInt();
-        System.out.println("Informe o horário da consulta (00/00/0000-hh:mm):");
-        horarioVenda = scanner.next();
-       
-
-        try{
-
-            System.out.println(horario);
-            horario = horario.replace("-"," ");
+        String cods = "";
+        for (int i = 0; i < produtosVendas.size(); i++) {
+            cods += produtosVendas.get(i).code;
+            if(i < produtosVendas.size()-1)cods += ",";
+        }
+        try {
+            PreparedStatement preparedStatement = connection
+                    .prepareStatement("SELECT SUM(valor) as total FROM produto WHERE cod in ("+cods+")");
+                    System.out.println("INSERT VENDA 1");
             
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            System.out.println(format.parse(horario));
-            SimpleDateFormat formatBD = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-           
+            System.out.println("INSERT VENDA 2");
+            ResultSet resultTotal = preparedStatement.executeQuery();
+            System.out.println("INSERT VENDA 3");
+            resultTotal.next();
+            System.out.println("INSERT VENDA 4");
+            double total = resultTotal.getDouble("total");
+            System.out.println("INSERT VENDA 5");
+            boolean salvo = false;
+            PreparedStatement salvarVenda = null;
+            try{
 
+            salvarVenda = connection.prepareStatement(
+                    "INSERT INTO venda(total, pagamento) VALUES (?,?)", java.sql.Statement.RETURN_GENERATED_KEYS);
+            salvarVenda.setDouble(1, total);
+            salvarVenda.setString(2, pagamento);
 
-            PreparedStatement buscarMedico = connection.prepareStatement("SELECT * FROM medico where matricula = ?");
-            buscarMedico.setInt(1, matricula);
-            ResultSet resultMedico = buscarMedico.executeQuery();
-
-            PreparedStatement buscarPaciente = connection.prepareStatement("SELECT * FROM paciente where cpf = ?");
-            buscarPaciente.setString(1, cpf);
-
-            ResultSet resultPaciente = buscarPaciente.executeQuery();
-
-            if(resultMedico.next() == false){
-                System.out.println("Médico não encontrado");
-            }else
-            if(resultPaciente.next() == false){
-                System.out.println("Paciente não encontrado");
-            }else{
-
-                String idPaciente = resultPaciente.getString("id");
-                String idMedico = resultMedico.getString("id");
-
-                PreparedStatement cadastroConsulta = connection.prepareStatement("DELETE FROM consulta WHERE id_paciente = ? AND id_medico = ? AND horario = ?");
-                cadastroConsulta.setInt(1, Integer.parseInt(idPaciente));
-                cadastroConsulta.setInt(2, Integer.parseInt(idMedico));
-                cadastroConsulta.setDate(3, new java.sql.Date(format.parse(horario).getTime()));
-
-            cadastroConsulta.execute();
-            System.out.println("Consulta Removida\n\n");
+            salvo = salvarVenda.execute();
+            }catch(Exception e){
+                System.out.println("INSERT VENDA");
+                System.out.println(e.getMessage());
             }
-        }catch(Exception e){
-            System.out.println(e);
-            System.out.println("Consulta não Removida\n\n");
-        }
 
+            if (!salvo) {
+
+                ResultSet idResult = salvarVenda.getGeneratedKeys();
+            
+                if (idResult.next()) {
+
+                    int id = idResult.getInt(1);
+                    for (int i = 0; i < produtosVendas.size(); i++) {
+                        PreparedStatement relacionamento = connection
+                                .prepareStatement("INSERT INTO venda_produto(cod_produto, id_venda) VALUES(?,?)");
+                        relacionamento.setInt(1, produtosVendas.get(i).code);
+                        relacionamento.setInt(2, id);
+                        boolean result = relacionamento.execute();
+                        if (result != false) {
+                            System.out.println("Não foi possível criar a venda");
+                            return;
+                        }
+                    }
+
+                }else{
+                    System.out.println("Não foi possível criar a venda");
+                }
+            }else{
+                System.out.println("Não foi possível criar a venda");
+            }
+            System.out.println("Venda criada com sucesso");
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            System.out.println("Não foi possível criar a venda");
+        }
 
     }
 
+    public void buscarVenda() {
+        Scanner scanner = new Scanner(System.in);
 
-    public void relatorioVenda() {
 
-       
+        System.out.println("Informe o id da venda:");
+        int id = scanner.nextInt();
 
         try{
 
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT consulta.*, medico.nome as medico_nome, medico.matricula, medico.especialidade, medico.salario, paciente.nome as paciente_nome, paciente.cpf, paciente.doenca FROM consulta INNER JOIN medico on medico.id = consulta.id_medico INNER JOIN paciente on paciente.id = consulta.id_paciente");
-
-            ResultSet result = preparedStatement.executeQuery();
-
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM venda WHERE id = ?");
+            statement.setInt(1, id);
+            PreparedStatement statementProdutosVenda = connection.prepareStatement("SELECT produto.id, produto.nome, produto.cod, produto.valor, produto.qtd FROM produto INNER JOIN venda_produto ON venda_produto.id_venda = ? WHERE produto.cod = venda_produto.cod_produto");
+            statementProdutosVenda.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            ResultSet resultSetProdutos = statementProdutosVenda.executeQuery();
+            if(resultSet.next()){
+                System.out.println("********************************************************");
+                //encontrou venda
+                System.out.println("ID: "+ resultSet.getInt("id"));
+                System.out.println("Valor: "+ resultSet.getDouble("total"));
+                System.out.println("Data: "+ resultSet.getDate("data").toLocalDate());
+            }else{
+                //não encontrou
+                System.out.println("Venda não encontrada");
+                return;
+            }
             int index = 0;
-            SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-            while(result.next()){
+            System.out.println("");
+            System.out.println("Produtos nessa venda:");
+            System.out.println("");
+            while(resultSetProdutos.next()){
                 index++;
-                System.out.println("Consulta "+index+":");
-
-                Double valor = result.getDouble("valor");
-                NumberFormat numberFormat = NumberFormat.getInstance();
-                String falorFormatado = numberFormat.format(valor);
-
-                
-                String dataFormatada = format.format(result.getDate("horario"));
-             
-                System.out.print("Nome do médico: ");
-                System.out.println(result.getString("medico_nome")+" ("+result.getInt("matricula")+")");
-                System.out.print("Nome paciente: ");
-                System.out.println(result.getString("paciente_nome")+" ("+result.getString("cpf")+")");
-                System.out.print("Horário: ");
-                System.out.println(dataFormatada);
-                System.out.print("Valor: ");
-                System.out.println(falorFormatado);
-                System.out.println("\n");
-                
-        }
-        if(index == 0){
-            System.out.println("CPF não encontrado");
-        }
-        System.out.println("\n");
-           
+                //produtos
+                System.out.println("ID: "+ resultSetProdutos.getInt("id"));
+                System.out.println("Código: "+ resultSetProdutos.getDouble("cod"));
+                System.out.println("Nome: "+ resultSetProdutos.getString("nome"));
+                System.out.println("Valor: "+ resultSetProdutos.getDouble("valor"));
+               System.out.println("---------------------------------------------------");
+               
+            }
+            System.out.println("********************************************************");
+            if(index == 0){
+                System.out.println("Não foi encontrado nenhum produto para essa venda");
+            }
         }catch(Exception e){
-            System.out.println(e);
-            System.out.println("Não foi possível encontrar o paciente");
-            System.out.println("\n");
+
+        }
+
+       
+
+    }
+
+    public void removerVenda() {
+        Scanner scanner = new Scanner(System.in);
+      
+
+
+        System.out.println("Informe o id da venda:");
+        int id = scanner.nextInt();
+
+        try{
+
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM venda WHERE id = ?");
+            statement.setInt(1, id);
+          
+            boolean resultSet = statement.execute();
+           
+            if(!resultSet){
+                System.out.println("Venda deletada");
+            }else{
+                System.out.println("Não foi possível deletar a venda");
+            }
+        }catch(Exception e){
+
         }
 
        
