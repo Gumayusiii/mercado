@@ -12,31 +12,29 @@ import java.util.Scanner;
 
 import com.mysql.cj.conf.HostInfo;
 
-public class ConsultaProduto {
+public class Venda {
     Connection connection;
 
-    public ConsultaProduto() throws SQLException{
-        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hospital", "root", "");
+    public ConsultaVenda() throws SQLException{
+        connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mercado", "root", "");
     }
-    public void cadastrar(){
+    public void adicionarVenda(){
         Scanner scanner = new Scanner(System.in);
        
-
-        String cpf;
-        int matricula;
-        String horario;
+        
+        int totalVendas;
+        String data;
         double valor;
        
 
-        System.out.println("Informe o CPF:");
-        cpf = scanner.next();
-        System.out.println("Informe o horário (00/00/0000-hh:mm):");
-        horario = scanner.next();
+
+    /*   System.out.println("Informe o horário (00/00/0000-hh:mm):");
+        data = scanner.next();
         System.out.println("Informe a matrícula:");
         matricula = scanner.nextInt();
         System.out.println("Informe o valor da consulta:");
         valor = Double.parseDouble(scanner.next());
-      
+       */
 
 
         try{
@@ -86,7 +84,7 @@ public class ConsultaProduto {
 
     }
 
-    public void atualizar(){
+    public void buscarVenda(){
         Scanner scanner = new Scanner(System.in);
        
 
@@ -154,7 +152,7 @@ public class ConsultaProduto {
 
     }
 
-    public void remover(){
+    public void removerVenda(){
         Scanner scanner = new Scanner(System.in);
        
 
@@ -220,7 +218,7 @@ public class ConsultaProduto {
     }
 
 
-    public void relatorio() {
+    public void relatorioVenda() {
 
        
 
