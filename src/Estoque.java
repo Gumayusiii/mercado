@@ -7,14 +7,17 @@ import java.util.Scanner;
 
 public class Estoque {
     Connection connection;
+    Scanner scanner = new Scanner(System.in);
 
     public Estoque() throws SQLException{
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/hospital", "root", "");
     }
     
-    //adiciona produto
+    //ADICIONAR PRODUTO
+
+
     public void addProduto(){
-        Scanner scanner = new Scanner(System.in);
+        
 
         String nomeProduto;
         int codigo;
@@ -51,21 +54,24 @@ public class Estoque {
        
     }
 
-    public void buscarProduto() {
+
+    //BUSCAR PRODUTO
+
+    public void buscarProduto(){
 
         Scanner scanner = new Scanner(System.in);
 
        
-        Int codigo;
+        int codigo;
 
       
         System.out.println("Informe o código do produto:");
-        codigo = scanner.next();
+        codigo = scanner.nextInt();
 
         try{
 
-            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM paciente where cod = ?");
-            preparedStatement.setString(1, codigo);
+            PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM produto where cod = ?");
+            preparedStatement.setInt(1, codigo);
             ResultSet result = preparedStatement.executeQuery();
 
             int index = 0;
@@ -77,21 +83,50 @@ public class Estoque {
                 System.out.println(result.getInt("cod"));
                 System.out.print("Nome: ");
                 System.out.println(result.getString("nome"));
-                System.out.print("CPF: ");
+                System.out.print("Valor: ");
                 System.out.println(result.getString("valor"));
-                System.out.print("Doença: ");
+                System.out.print("Quantidade: ");
                 System.out.println(result.getString("qtd"));
                 
         }
+
         if(index == 0){
             System.out.println("Produto não encontrado");
         }
            
-        }catch(Exception e){
+        catch(Exception e){
             System.out.println(e);
             System.out.println("Não foi possível encontrar o produto");
         }
 
-       
+
+       //ATUALIZAR PRODUTO
+
+        public void AtualizarProduto() {
+
+            int codigo;
+    
+          
+            System.out.println("Informe o código do produto:");
+            codigo = scanner.nextInt();
+            System.out.println("Informe o novo valor do produto");
+            double novoValor = scanner.nextInt();
+            System.out.println("Informe a quantidade do produto: ");
+            int nvQtd = scanner.nextInt();
+            try{
+                PreparedStatement preparedStatement = connection.prepareStatement("UPDATE produto SET  valor = ? qtd = ? where cod = ? ");
+                preparedStatement.setDouble(1, novoValor);
+                preparedStatement.setInt(1, nvQtd);
+                preparedStatement.setInt(1, codigo);
+                boolean result = preparedStatement.execute();
+                if(!result){
+                    System.out.println("Produto atualizado!");
+                }else{
+                    System.out.println("Falha em atualizar produto!");
+                }
+            }catch(Exception e){
+                System.out.println("Erro! Não foi possível atualizar o produto!");
+            }
     }
 }
+    

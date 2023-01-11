@@ -12,10 +12,10 @@ import java.util.Scanner;
 
 import com.mysql.cj.conf.HostInfo;
 
-public class Venda {
+public class Venda{
     Connection connection;
 
-    public ConsultaVenda() throws SQLException{
+    public Venda() throws SQLException{
         connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/mercado", "root", "");
     }
     public void adicionarVenda(){
@@ -158,7 +158,7 @@ public class Venda {
 
         String cpf;
         int matricula;
-        String horario;
+        String horarioVenda;
     
        
 
@@ -168,7 +168,7 @@ public class Venda {
         System.out.println("Informe a matrícula do médico:");
         matricula = scanner.nextInt();
         System.out.println("Informe o horário da consulta (00/00/0000-hh:mm):");
-        horario = scanner.next();
+        horarioVenda = scanner.next();
        
 
         try{

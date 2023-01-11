@@ -2,8 +2,10 @@ import java.sql.SQLException;
 import java.util.Scanner;
 
 public class Main {
+  
     public static void main(String[] args) throws SQLException {
-            Produto produto;
+            Scanner scanner = new Scanner(System.in);
+            Estoque produto;
             Venda venda;
             boolean sair;
             while (sair == false) {
@@ -23,19 +25,19 @@ public class Main {
 
                 switch (opcao) {
                     case 1:
-                        produto.buscar();
+                        produto.buscarProduto();
                         break;
                     case 2:
-                        produto.cadastrar();();
+                        produto.cadastrarPro();
                         break;
                     case 3:
                         venda.Processar();
                         break;
                     case 4:
-                        produto.cadastrar();
+                        produto.;
                         break;
                     case 5:
-                        paciente.buscarPorCPF();
+                        produto.buscarProduto();
                         break;
                     case 6:
                         sair = true;
@@ -48,7 +50,9 @@ public class Main {
 
             }
 
-        } */
+            scanner.close();
+
+        } 
 
     }
 }
