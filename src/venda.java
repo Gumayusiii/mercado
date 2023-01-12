@@ -70,15 +70,15 @@ public class Venda {
         try {
             PreparedStatement preparedStatement = connection
                     .prepareStatement("SELECT SUM(valor) as total FROM produto WHERE cod in ("+cods+")");
-                    System.out.println("INSERT VENDA 1");
+            //System.out.println("INSERT VENDA 1");
             
-            System.out.println("INSERT VENDA 2");
+            ///System.out.println("INSERT VENDA 2");
             ResultSet resultTotal = preparedStatement.executeQuery();
-            System.out.println("INSERT VENDA 3");
+            //System.out.println("INSERT VENDA 3");
             resultTotal.next();
-            System.out.println("INSERT VENDA 4");
+            //System.out.println("INSERT VENDA 4");
             double total = resultTotal.getDouble("total");
-            System.out.println("INSERT VENDA 5");
+            //System.out.println("INSERT VENDA 5"); 
             boolean salvo = false;
             PreparedStatement salvarVenda = null;
             try{
@@ -106,6 +106,7 @@ public class Venda {
                                 .prepareStatement("INSERT INTO venda_produto(cod_produto, id_venda) VALUES(?,?)");
                         relacionamento.setInt(1, produtosVendas.get(i).code);
                         relacionamento.setInt(2, id);
+                        System.out.println("Id da venda: " + id);
                         boolean result = relacionamento.execute();
                         if (result != false) {
                             System.out.println("Não foi possível criar a venda");
@@ -119,6 +120,7 @@ public class Venda {
             }else{
                 System.out.println("Não foi possível criar a venda");
             }
+            
             System.out.println("Venda criada com sucesso");
 
         } catch (Exception e) {
